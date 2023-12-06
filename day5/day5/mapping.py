@@ -3,6 +3,7 @@ class Mapping:
         self.destination = destination
         self.source = source
         self.range = range
+        self.end_range = source + range
     
     def __str__(self) -> str:
         return f"Destination: {self.destination}, Source: {self.source}, Range: {self.range}"
