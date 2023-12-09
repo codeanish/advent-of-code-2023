@@ -1,6 +1,6 @@
 
 
-
+import math
 from typing import Dict, List, Tuple
 
 
@@ -57,6 +57,27 @@ def part_2_brute_force(nodes: Dict[str, Tuple[str,str]], directions: str) -> int
     print(steps)
 
 
+# I checked the z end nodes here, it looks as though the nodes loop back 
+# on themselves as soon as they find the Z node.
+def part_2(nodes: Dict[str, Tuple[str,str]], directions: str) -> Dict[str,int]:
+    keys = list(nodes.keys())
+    current_keys = list(filter(lambda x: x[2] == 'A', keys))
+    length_of_directions = len(directions)
+    steps_till_z = {}
+    for key in current_keys:
+        current_key = key
+        steps = 0
+        while current_key[2] != 'Z':
+            direction = directions[steps % length_of_directions]
+            if direction == 'R':
+                current_key = nodes[current_key][1]
+            elif direction == 'L':
+                current_key = nodes[current_key][0]
+            steps += 1
+        steps_till_z[key] = steps
+    return steps_till_z 
+        
+
             
 
 def all_keys_at_end(keys: list[str]) -> bool:
@@ -72,6 +93,17 @@ if __name__ == "__main__":
     directions = data[0]
     data = data[2::]
     nodes = build_node_map(data)
+    loops = part_2(nodes, directions)
+
+    distances = []
+    # print(loops)
+    for start in loops:
+        distances.append(loops[start])
+    a = distances   #will work for an int array of any length
+    lcm = 1
+    for i in a:
+        lcm = lcm*i//math.gcd(lcm, i)
+    print(lcm)
 
     # part_2_brute_force(nodes, directions)
 
