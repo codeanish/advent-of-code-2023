@@ -12,7 +12,7 @@ def read_text_file_to_lines(filename: str) -> list[str]:
 
 def get_next_coordinates(current_coordinates: tuple[int,int], x_length: int, y_length: int, direction: Direction) -> Optional[tuple[int,int]]:
     if direction == Direction.RIGHT:
-        if current_coordinates[0] + 1 < x_length - 1:
+        if current_coordinates[0] + 1 < x_length:
             return (current_coordinates[0] + 1, current_coordinates[1])
     elif direction == Direction.LEFT:
         if current_coordinates[0] - 1 >= 0:
@@ -52,7 +52,7 @@ def beam_route(grid: list[str], current_coordinates: tuple[int,int], direction: 
                     route = route + beam_route(grid, next_coordinates, Direction.DOWN)
                 else:
                     break
-            # direction = Direction.DOWN
+            break
         elif current_value == "\\":
             if direction == Direction.RIGHT:
                 direction = Direction.DOWN
@@ -86,21 +86,66 @@ def beam_route(grid: list[str], current_coordinates: tuple[int,int], direction: 
                     route = route + beam_route(grid, next_coordinates, Direction.RIGHT)
                 else:
                     break
-        
+            break
         current_coordinates = get_next_coordinates(current_coordinates, x_length, y_length, direction)
     
 
     return route
 
 if __name__ == "__main__":
-    lines = read_text_file_to_lines("day16/example.txt")
+    lines = read_text_file_to_lines("day16/input.txt")
     x_length = len(lines[0])
     y_length = len(lines)
     
     starting_coordinates = (0,0)
     completed_routes.append((starting_coordinates, Direction.RIGHT))
-    route = beam_route(lines, starting_coordinates, Direction.RIGHT)
-    print(len(set(route)))
+    max_route = 0
+
+    for x in range(x_length):
+        starting_coordinates = (x,0)
+        completed_routes = []
+        completed_routes.append((starting_coordinates, Direction.DOWN))
+        route = len(set(beam_route(lines, starting_coordinates, Direction.DOWN)))
+        if route > max_route:
+            max_route = route
+
+    for x in range(x_length):
+        starting_coordinates = (x, y_length - 1)
+        completed_routes = []
+        completed_routes.append((starting_coordinates, Direction.UP))
+        route = len(set(beam_route(lines, starting_coordinates, Direction.UP)))
+        if route > max_route:
+            max_route = route
+
+    for y in range(y_length):
+        starting_coordinates = (0, y)
+        completed_routes = []
+        completed_routes.append((starting_coordinates, Direction.RIGHT))
+        route = len(set(beam_route(lines, starting_coordinates, Direction.RIGHT)))
+        if route > max_route:
+            max_route = route
+
+    for y in range(y_length):
+        starting_coordinates = (x_length - 1, y)
+        completed_routes = []
+        completed_routes.append((starting_coordinates, Direction.LEFT))
+        route = len(set(beam_route(lines, starting_coordinates, Direction.LEFT)))
+        if route > max_route:
+            max_route = route
+    
+    print(max_route)
+
+    # for y in range(y_length):
+    #     for x in range(x_length):
+    #         if (x,y) in route:
+    #             print("#", end="")
+    #         else:
+    #             print(".", end="")
+    #     print()
+    # print(route)
+    # print(len(set(route)))
+    # print(set(route))
+    # print(len(set(route)))
 
     # for line in lines:
     #     print(line)
